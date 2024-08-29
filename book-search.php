@@ -98,6 +98,14 @@ class BookSearchPlugin {
         register_post_type('book', $args);
     }
 
+    /**
+     * Register author taxonomy
+     * 
+     * This function registers the 'author' taxonomy, which is non-hierarchical 
+     * and associated with the 'book' post type.
+     * 
+     * @return void
+     */
     private function register_author_taxonomy() {
         $labels = array(
             'name'              => _x('Authors', 'taxonomy general name', 'textdomain'),
@@ -126,6 +134,14 @@ class BookSearchPlugin {
         register_taxonomy('author', array('book'), $args);
     }
 
+    /**
+     * Register publisher taxonomy
+     * 
+     * This function registers the 'publisher' taxonomy, which is non-hierarchical 
+     * and associated with the 'book' post type.
+     * 
+     * @return void
+     */
     private function register_publisher_taxonomy() {
         $labels = array(
             'name'              => _x('Publishers', 'taxonomy general name', 'textdomain'),
@@ -181,6 +197,15 @@ class BookSearchPlugin {
         );
     }
 
+    /**
+     * Rating meta box callback
+     * 
+     * This function renders the meta box for the book rating.
+     * 
+     * @param WP_Post $post The post object.
+     * @return void
+     */
+
     public function rating_meta_box_callback($post) {
         $value = get_post_meta($post->ID, '_book_rating', true);
         echo '<label for="book_rating_field">' . __('Rating (1 to 5):', 'textdomain') . '</label>';
@@ -191,12 +216,28 @@ class BookSearchPlugin {
         echo '</select>';
     }
 
+     /**
+     * Price meta box callback
+     * 
+     * This function renders the meta box for the book price.
+     * 
+     * @param WP_Post $post The post object.
+     * @return void
+     */
     public function price_meta_box_callback($post) {
         $value = get_post_meta($post->ID, '_book_price', true);
         echo '<label for="book_price_field">' . __('Price ($):', 'textdomain') . '</label>';
         echo '<input type="text" name="book_price_field" id="book_price_field" value="' . esc_attr($value) . '" class="postbox" />';
     }
 
+     /**
+     * Save meta box data
+     * 
+     * This function saves the meta box data for book rating and price when the post is saved.
+     * 
+     * @param int $post_id The ID of the post being saved.
+     * @return void
+     */
     public function save_meta_box_data($post_id) {
         if (!isset($_POST['book_rating_field']) || !isset($_POST['book_price_field'])) {
             return;
@@ -209,6 +250,14 @@ class BookSearchPlugin {
         update_post_meta($post_id, '_book_price', $price);
     }
 
+
+    /**
+     * Book search shortcode
+     * 
+     * This function generates the book search form using a shortcode.
+     * 
+     * @return string The HTML for the book search form.
+     */
     public function book_search_shortcode() {
         ob_start();
         ?>
@@ -277,7 +326,14 @@ class BookSearchPlugin {
             return ob_get_clean();
         }
     
-    
+    /**
+     * Filter query
+     * 
+     * This function filters the WordPress query to apply the search filters for the book search.
+     * 
+     * @param WP_Query $query The WP_Query instance (passed by reference).
+     * @return void
+     */    
 
         public function filter_query($query) {
             if ($query->is_search() && $query->get('post_type') == 'book' && !is_admin()) {
@@ -335,6 +391,13 @@ class BookSearchPlugin {
         ));
     }
 
+    /**
+     * AJAX book search
+     * 
+     * This function handles the AJAX request for searching books and returns the search results.
+     * 
+     * @return void
+     */
     public function ajax_book_search() {
         $args = array(
             'post_type' => 'book',
